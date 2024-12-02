@@ -37,6 +37,7 @@
         <img src="Asian_Development_Bank_logo.png" alt="Organization Logo" class="logo">
         <p>Please enter the 10-digit serial number in the e-certificate:</p>
         <input type="text" id="serial-number" class="input-box" maxlength="10">
+        <button id="verify-button">Verify</button>
         <div id="status" class="status">verified or not verified</div>
     </div>
 
@@ -61,8 +62,8 @@
             .then(data => {
                 const serialToSurname = parseCSV(data);
 
-                document.getElementById('serial-number').addEventListener('input', function() {
-                    var serialNumber = this.value;
+                document.getElementById('verify-button').addEventListener('click', function() {
+                    var serialNumber = document.getElementById('serial-number').value;
                     var statusElement = document.getElementById('status');
                     
                     if (serialNumber.length === 10) {
