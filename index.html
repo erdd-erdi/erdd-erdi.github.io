@@ -40,25 +40,46 @@
         <div id="status" class="status">verified or not verified</div>
     </div>
 
+
     <script>
-        document.getElementById('serial-number').addEventListener('input', function() {
-            var serialNumber = this.value;
-            var statusElement = document.getElementById('status');
-            
-            if (serialNumber.length === 10) {
-                // Mock verification logic
-                if (serialNumber === '1234567890') {
-                    statusElement.textContent = 'Verified';
-                    statusElement.className = 'status verified';
-                } else {
-                    statusElement.textContent = 'Not Verified';
-                    statusElement.className = 'status not-verified';
+        // Function to parse CSV data
+        function parseCSV(text) {
+            const lines = text.split('\\n');
+            const result = {};
+            for (let i = 1; i < lines.length; i++) {
+                const [serial, surname] = lines[i].split(',');
+                if (serial && surname) {
+                    result[serial.trim()] = surname.trim();
                 }
-            } else {
-                statusElement.textContent = 'verified or not verified';
-                statusElement.className = 'status';
             }
-        });
+            return result;
+        }
+
+        // Load the CSV data
+        fetch('participants.csv')
+            .then(response => response.text())
+            .then(data => {
+                const serialToSurname = parseCSV(data);
+
+                document.getElementById('serial-number').addEventListener('input', function() {
+                    var serialNumber = this.value;
+                    var statusElement = document.getElementById('status');
+                    
+                    if (serialNumber.length === 10) {
+                        if (serialToSurname.hasOwnProperty(serialNumber)) {
+                            statusElement.textContent = 'Verified. Participant surname is ' + serialToSurname[serialNumber];
+                            statusElement.className = 'status verified';
+                        } else {
+                            statusElement.textContent = 'Invalid';
+                            statusElement.className = 'status not-verified';
+                        }
+                    } else {
+                        statusElement.textContent = 'verified or not verified';
+                        statusElement.className = 'status';
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading CSV data:', error));
     </script>
 </body>
 </html>
