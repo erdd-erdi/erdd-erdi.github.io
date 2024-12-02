@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,18 +40,28 @@
         <div id="status" class="status">verified or not verified</div>
     </div>
 
-
     <script>
         // Function to parse CSV data
         function parseCSV(text) {
-            const lines = text.split('\\n');
+            const lines = text.split('\r\n').filter(line => line.trim() !== '');
+            const headers = lines[0].split(',').map(header => header.trim());
+            const serialIndex = headers.indexOf('Serial Number');
+            const surnameIndex = headers.indexOf('Surname');
             const result = {};
+
+            console.log("Headers:", headers);
+            console.log("Serial Index:", serialIndex);
+            console.log("Surname Index:", surnameIndex);
+
             for (let i = 1; i < lines.length; i++) {
-                const [serial, surname] = lines[i].split(',');
+                const columns = lines[i].split(',').map(column => column.trim());
+                const serial = columns[serialIndex];
+                const surname = columns[surnameIndex];
                 if (serial && surname) {
                     result[serial.trim()] = surname.trim();
                 }
             }
+
             return result;
         }
 
@@ -60,12 +69,19 @@
         fetch('participants.csv')
             .then(response => response.text())
             .then(data => {
+                console.log("CSV Data Loaded:");
+                console.log(data); // Log the raw CSV data
+
                 const serialToSurname = parseCSV(data);
+                console.log("Parsed Data:");
+                console.log(serialToSurname); // Log the parsed data
 
                 document.getElementById('verify-button').addEventListener('click', function() {
                     var serialNumber = document.getElementById('serial-number').value;
                     var statusElement = document.getElementById('status');
                     
+                    console.log("Serial Number Entered:", serialNumber); // Log the entered serial number
+
                     if (serialNumber.length === 10) {
                         if (serialToSurname.hasOwnProperty(serialNumber)) {
                             statusElement.textContent = 'Verified. Participant surname is ' + serialToSurname[serialNumber];
@@ -75,8 +91,8 @@
                             statusElement.className = 'status not-verified';
                         }
                     } else {
-                        statusElement.textContent = 'verified or not verified';
-                        statusElement.className = 'status';
+                        statusElement.textContent = 'Invalid';
+                        statusElement.className = 'status not-verified';
                     }
                 });
             })
