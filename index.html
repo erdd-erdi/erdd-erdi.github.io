@@ -43,7 +43,7 @@
     <script>
         // Function to parse CSV data
         function parseCSV(text) {
-            const lines = text.split('\r\n').filter(line => line.trim() !== '');
+            const lines = text.split('\n').filter(line => line.trim() !== '');
             const headers = lines[0].split(',').map(header => header.trim());
             const serialIndex = headers.indexOf('Serial Number');
             const surnameIndex = headers.indexOf('Surname');
