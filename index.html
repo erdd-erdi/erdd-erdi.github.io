@@ -67,38 +67,47 @@
             return result;
         }
 
-        // Load the CSV data
-        fetch('participants.csv')
-            .then(response => response.text())
-            .then(data => {
-                console.log("CSV Data Loaded:");
-                console.log(data); // Log the raw CSV data
+        document.getElementById('verify-button').addEventListener('click', function() {
+            var serialNumber = document.getElementById('serial-number').value;
+            var statusElement = document.getElementById('status');
 
-                const serialToSurname = parseCSV(data);
-                console.log("Parsed Data:");
-                console.log(serialToSurname); // Log the parsed data
+            if (serialNumber.length === 10) {
+                var filePrefix = serialNumber.substring(0, 6);
+                var filename = filePrefix + '_participants.csv';
 
-                document.getElementById('verify-button').addEventListener('click', function() {
-                    var serialNumber = document.getElementById('serial-number').value;
-                    var statusElement = document.getElementById('status');
-                    
-                    console.log("Serial Number Entered:", serialNumber); // Log the entered serial number
+                fetch(filename)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('File not found');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        const serialToSurname = parseCSV(data);
 
-                    if (serialNumber.length === 10) {
                         if (serialToSurname.hasOwnProperty(serialNumber)) {
                             statusElement.textContent = 'Verified: Certificate Holder - ' + serialToSurname[serialNumber];
                             statusElement.className = 'status verified';
                         } else {
-                            statusElement.textContent = 'Invalid';
+                            statusElement.textContent = 'Invalid Serial Number (1)';
                             statusElement.className = 'status not-verified';
                         }
-                    } else {
-                        statusElement.textContent = 'Invalid Serial Number';
+
+                        // Free up memory
+                        for (let key in serialToSurname) {
+                            delete serialToSurname[key];
+                        }
+                    })
+                    .catch(error => {
+                        statusElement.textContent = 'Invalid Serial Number (2).';
                         statusElement.className = 'status not-verified';
-                    }
-                });
-            })
-            .catch(error => console.error('Error loading CSV data:', error));
+                    });
+            } else {
+                statusElement.textContent = 'Invalid';
+                statusElement.className = 'status not-verified';
+            }
+        });
+
     </script>
 </body>
 </html>
