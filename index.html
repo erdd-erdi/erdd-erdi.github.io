@@ -58,7 +58,7 @@
             console.log("Surname Index:", surnameIndex);
 
             for (let i = 1; i < lines.length; i++) {
-                const columns = lines[i].split(',').map(column => column.trim());
+                const columns = lines[i].split(',').map(column => column.trim().replace(/^"|"$/g, ''));
                 const serial = columns[serialIndex];
                 const surname = columns[surnameIndex];
                 const givenname = columns[givennameIndex]
@@ -99,6 +99,7 @@
 
                         if (serialToDetails.hasOwnProperty(serialNumber)) {
                             const details = serialToDetails[serialNumber];
+                            console.log('Dates:', details.dates); // Log the dates
                             statusElement.innerHTML = `Verified. Certificate details below.<br>${details.surname}<br>${details.training}<br>${details.venue}, ${details.dates}`;
                             statusElement.className = 'status verified';
                         } else {
