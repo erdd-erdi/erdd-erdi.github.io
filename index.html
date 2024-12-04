@@ -112,6 +112,7 @@
                         }
                     })
                     .catch(error => {
+                        console.error('Error:', error); // Log the error
                         statusElement.textContent = 'Invalid Serial Number (2) -new.';
                         statusElement.className = 'status not-verified';
                     });
