@@ -99,7 +99,7 @@
 
                         if (serialToDetails.hasOwnProperty(serialNumber)) {
                             const details = serialToDetails[serialNumber];
-                            statusElement.textContent = `Verified: Certificate Holder - ${details.surname}\nTraining Title: ${details.training}\nVenue: ${details.venue}\nDates: ${details.dates}`;
+                            statusElement.textContent = `Verified. Certificate details below:<br>${details.surname}<br>${details.training}<br>${details.venue}, ${details.dates}`;
                             statusElement.className = 'status verified';
                         } else {
                             statusElement.textContent = 'Invalid Serial Number (1)';
