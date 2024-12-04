@@ -97,7 +97,7 @@
                     .then(data => {
                         const serialToDetails = parseCSV(data);
 
-                        if (serialToSurname.hasOwnProperty(serialNumber)) {
+                        if (serialToDetails.hasOwnProperty(serialNumber)) {
                             const details = serialToDetails[serialNumber];
                             statusElement.textContent = `Verified: Certificate Holder - ${details.surname}\nTraining Title: ${details.training}\nVenue: ${details.venue}\nDates: ${details.dates}`;
                             statusElement.className = 'status verified';
@@ -107,8 +107,8 @@
                         }
 
                         // Free up memory
-                        for (let key in serialToSurname) {
-                            delete serialToSurname[key];
+                        for (let key in serialToDetails) {
+                            delete serialToDetails[key];
                         }
                     })
                     .catch(error => {
