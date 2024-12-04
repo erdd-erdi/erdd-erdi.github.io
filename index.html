@@ -48,6 +48,9 @@
             const serialIndex = headers.indexOf('Serial Number');
             const surnameIndex = headers.indexOf('Surname');
             const givennameIndex = headers.indexOf('Given Name');
+            const trainingIndex = headers.indexOf('Training Workshop Name');
+            const venueIndex = headers.indexOf('Training Workshop Venue');
+            const datesIndex = headers.indexOf('Training Workshop Date');
             const result = {};
 
             console.log("Headers:", headers);
@@ -59,8 +62,16 @@
                 const serial = columns[serialIndex];
                 const surname = columns[surnameIndex];
                 const givenname = columns[givennameIndex]
-                if (serial && surname && givenname) {
-                    result[serial.trim()] = givenname.trim() + " " + surname.trim();
+                const training = columns[trainingIndex];
+                const venue = columns[venueIndex];
+                const dates = columns[datesIndex];
+                if (serial && surname && givenname && training && venue && dates) {
+                    result[serial] = {
+                        surname: givenname + " " + surname,
+                        training: training,
+                        venue: venue,
+                        dates: dates
+                    };
                 }
             }
 
@@ -86,7 +97,8 @@
                         const serialToSurname = parseCSV(data);
 
                         if (serialToSurname.hasOwnProperty(serialNumber)) {
-                            statusElement.textContent = 'Verified: Certificate Holder - ' + serialToSurname[serialNumber];
+                            const details = serialToDetails[serialNumber];
+                            statusElement.textContent = `Verified: Certificate Holder - ${details.surname}\nTraining Title: ${details.training}\nVenue: ${details.venue}\nDates: ${details.dates}`;
                             statusElement.className = 'status verified';
                         } else {
                             statusElement.textContent = 'Invalid Serial Number (1)';
