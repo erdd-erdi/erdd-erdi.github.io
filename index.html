@@ -30,6 +30,7 @@
             color: red;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -41,7 +42,6 @@
     </div>
 
     <script>
-        src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js">
         // Function to parse CSV data
         function parseCSV(text) {
             const lines = text.split('\n').filter(line => line.trim() !== '');
