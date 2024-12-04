@@ -58,6 +58,7 @@
             console.log("Surname Index:", surnameIndex);
 
             for (let i = 1; i < lines.length; i++) {
+                console.log("Lines:", lines[i]);
                 const columns = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(column => column.trim().replace(/^"|"$/g, ''));
                 const serial = columns[serialIndex];
                 const surname = columns[surnameIndex];
