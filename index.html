@@ -95,7 +95,7 @@
                         return response.text();
                     })
                     .then(data => {
-                        const serialToSurname = parseCSV(data);
+                        const serialToDetails = parseCSV(data);
 
                         if (serialToSurname.hasOwnProperty(serialNumber)) {
                             const details = serialToDetails[serialNumber];
