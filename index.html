@@ -41,6 +41,7 @@
     </div>
 
     <script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js">
         // Function to parse CSV data
         function parseCSV(text) {
             const lines = text.split('\n').filter(line => line.trim() !== '');
@@ -97,7 +98,27 @@
                         return response.text();
                     })
                     .then(data => {
-                        const serialToDetails = parseCSV(data);
+                        // const serialToDetails = parseCSV(data);
+                        // Use PapaParse to parse the CSV data
+                        const parsedData = Papa.parse(data, {
+                            header: true,
+                            skipEmptyLines: true
+                        }).data;
+
+                        console.log('Parsed data:', parsedData); // Log the parsed data
+
+                        const serialToDetails = {};
+                        parsedData.forEach(row => {
+                            const serial = row['Serial Number'];
+                            if (serial) {
+                                serialToDetails[serial] = {
+                                    surname: row['Given Name'] + " " + row['Surname'],
+                                    training: row['Training Workshop Name'],
+                                    venue: row['Training Workshop Venue'],
+                                    dates: row['Training Workshop Date']
+                                };
+                            }
+                        });
 
                         if (serialToDetails.hasOwnProperty(serialNumber)) {
                             const details = serialToDetails[serialNumber];
