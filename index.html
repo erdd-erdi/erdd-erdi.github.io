@@ -99,7 +99,7 @@
 
             if (serialNumber.length === 10) {
                 var filePrefix = serialNumber.substring(0, 6);
-                var filename = 'data/' + filePrefix + '_participants.csv';
+                var filename = 'data/' + filePrefix + '_registry.csv';
 
                 console.log("filename path:", filename);
                 fetch(filename)
