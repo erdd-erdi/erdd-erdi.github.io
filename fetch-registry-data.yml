@@ -1,6 +1,8 @@
 name: Fetch Registry Data
 
-on: push
+on:
+  repository_dispatch:
+    types: [fetch-registry]
 
 jobs:
   fetch-data:
