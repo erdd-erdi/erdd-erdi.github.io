@@ -76,7 +76,7 @@
                 console.log("Columns:", columns);
                 const serial = columns[serialIndex];
                 const surname = columns[surnameIndex];
-                const givenname = columns[givennameIndex]
+                const givenname = columns[givennameIndex];
                 const training = columns[trainingIndex];
                 const venue = columns[venueIndex];
                 const dates = columns[datesIndex];
@@ -99,7 +99,7 @@
 
             if (serialNumber.length === 10) {
                 var filePrefix = serialNumber.substring(0, 8);
-                var filename = 'data/' + filePrefix + '_registry.csv';
+                var filename = 'data/' + filePrefix + '_participants.csv';
 
                 console.log("filename path:", filename);
                 fetch(filename)
