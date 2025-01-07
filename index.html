@@ -35,8 +35,8 @@
 <body>
     <div class="container">
         <img src="Asian_Development_Bank_logo.png" alt="Organization Logo" class="logo">
-        <p>Please enter the 10-digit serial number in the e-certificate:</p>
-        <input type="text" id="serial-number" class="input-box" maxlength="10">
+        <p>Please enter the 11-digit serial number in the e-certificate:</p>
+        <input type="text" id="serial-number" class="input-box" maxlength="11">
         <button id="verify-button">Verify</button>
         <div id="status" class="status">verified or not verified</div>
     </div>
@@ -98,7 +98,7 @@
             var statusElement = document.getElementById('status');
 
             if (serialNumber.length === 10) {
-                var filePrefix = serialNumber.substring(0, 6);
+                var filePrefix = serialNumber.substring(0, 8);
                 var filename = 'data/' + filePrefix + '_registry.csv';
 
                 console.log("filename path:", filename);
