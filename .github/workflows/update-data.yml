@@ -14,22 +14,21 @@ jobs:
           path: data
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Remove Submodule Configuration
+      - name: Remove data folder if it was added as a submodule
         run: |
-          git rm --cached data
-          rm -rf .git/modules/data
-
-      - name: Set up SSH for GitHub
+          git submodule deinit -f data || true
+          git rm --cached data || true
+          git commit -m "Removed data folder (submodule or cache)"
+        
+      - name: Sync private data to public repo
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-      - name: Commit and Push Data to Public Repo
+          # Make sure the data is in the right location
+          cp -r data/* .
+          
+      - name: Commit the sync and push changes
         run: |
           git config --global user.name "erdd-erdi"
           git config --global user.email "mcordel@adb.org"
-          git add data
+          git add .
           git commit -m "Sync private data"
-          git push git@github.com:${{ github.repository }}.git HEAD:main
+          git push
