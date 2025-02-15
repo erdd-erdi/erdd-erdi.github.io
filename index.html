@@ -30,13 +30,14 @@
             color: red;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
         <img src="Asian_Development_Bank_logo.png" alt="Organization Logo" class="logo">
-        <p>Please enter the 11-digit serial number in the e-certificate:</p>
-        <input type="text" id="serial-number" class="input-box" maxlength="11">
+        <p>Please enter the 11-digit serial number and surname in the e-certificate:</p>
+        <input type="text" id="serial-number" class="input-box" maxlength="11" placeholder="Serial Number">
+        <input type="text" id="surname" class="input-box" placeholder="Surname">
         <button id="verify-button">Verify</button>
         <div id="status" class="status"> ... </div>
     </div>
@@ -54,110 +55,52 @@
         }
     </style>
     <script>
-        // Function to parse CSV data
-        function parseCSV(text) {
-            const lines = text.split('\n').filter(line => line.trim() !== '');
-            const headers = lines[0].split(',').map(header => header.trim());
-            const serialIndex = headers.indexOf('Serial Number');
-            const surnameIndex = headers.indexOf('Surname');
-            const givennameIndex = headers.indexOf('Given Name');
-            const trainingIndex = headers.indexOf('Training Workshop Name');
-            const venueIndex = headers.indexOf('Training Workshop Venue');
-            const datesIndex = headers.indexOf('Training Workshop Date');
-            const result = {};
-
-            console.log("Headers:", headers);
-            console.log("Serial Index:", serialIndex);
-            console.log("Surname Index:", surnameIndex);
-
-            for (let i = 1; i < lines.length; i++) {
-                console.log("Lines:", lines[i]);
-                const columns = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(column => column.trim().replace(/^"|"$/g, ''));
-                console.log("Columns:", columns);
-                const serial = columns[serialIndex];
-                const surname = columns[surnameIndex];
-                const givenname = columns[givennameIndex];
-                const training = columns[trainingIndex];
-                const venue = columns[venueIndex];
-                const dates = columns[datesIndex];
-                if (serial && surname && givenname && training && venue && dates) {
-                    result[serial] = {
-                        surname: givenname + " " + surname,
-                        training: training,
-                        venue: venue,
-                        dates: dates
-                    };
-                }
-            }
-
-            return result;
-        }
-
         document.getElementById('verify-button').addEventListener('click', function() {
             var serialNumber = document.getElementById('serial-number').value;
+            var surname = document.getElementById('surname').value;
             var statusElement = document.getElementById('status');
 
-            if (serialNumber.length === 11) {
-                var filePrefix = serialNumber.substring(0, 8);
-                var filename = 'data/' + filePrefix + '_participants.csv';
-
-                console.log("filename path:", filename);
-                fetch(filename)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('File not found');
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        // const serialToDetails = parseCSV(data);
-                        // Use PapaParse to parse the CSV data
-                        const parsedData = Papa.parse(data, {
-                            header: true,
-                            skipEmptyLines: true
-                        }).data;
-
-                        console.log('Parsed  data:', parsedData); // Log the parsed data
-
-                        const serialToDetails = {};
-                        parsedData.forEach(row => {
-                            const serial = row['Serial Number'];
-                            if (serial) {
-                                serialToDetails[serial] = {
-                                    surname: row['Given Name'] + " " + row['Surname'],
-                                    training: row['Training Workshop Name'],
-                                    venue: row['Training Workshop Venue'],
-                                    dates: row['Training Workshop Date']
-                                };
-                            }
-                        });
-
-                        if (serialToDetails.hasOwnProperty(serialNumber)) {
-                            const details = serialToDetails[serialNumber];
-                            console.log('Dates:', details.dates); // Log the dates
-                            statusElement.innerHTML = `Verified. Certificate details below.<br>${details.surname}<br>${details.training}<br>${details.venue}, ${details.dates}`;
-                            statusElement.className = 'status verified';
-                        } else {
-                            statusElement.textContent = 'Invalid Serial Number (1)';
-                            statusElement.className = 'status not-verified';
-                        }
-
-                        // Free up memory
-                        for (let key in serialToDetails) {
-                            delete serialToDetails[key];
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error); // Log the error
-                        statusElement.textContent = 'Invalid Serial Number (2)';
-                        statusElement.className = 'status not-verified';
-                    });
-            } else {
-                statusElement.textContent = 'Invalid';
+            if (serialNumber.length !== 11 || !surname) {
+                statusElement.textContent = 'Missing input: Please provide both serial number and surname.';
                 statusElement.className = 'status not-verified';
+                return;
             }
-        });
 
+            var filePrefix = serialNumber.substring(0, 8);
+            var filename = 'data/' + filePrefix + '_participants.xlsx';
+
+            fetch(filename)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('File not found');
+                    }
+                    return response.arrayBuffer();
+                })
+                .then(data => {
+                    var workbook = XLSX.read(data, { type: 'array' });
+                    var sheetName = workbook.SheetNames[0];
+                    var sheet = workbook.Sheets[sheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(sheet);
+
+                    var found = jsonData.some(row => {
+                        return row['Serial Number'] === serialNumber && row['Surname'] === surname;
+                    });
+
+                    if (found) {
+                        var details = jsonData.find(row => row['Serial Number'] === serialNumber && row['Surname'] === surname);
+                        statusElement.innerHTML = `Verified. Certificate details below.<br>${details['Given Name']} ${details['Surname']}<br>${details['Training Workshop Name']}<br>${details['Training Workshop Venue']}, ${details['Training Workshop Date']}`;
+                        statusElement.className = 'status verified';
+                    } else {
+                        statusElement.textContent = 'Invalid serial number or surname. Cannot be found in the system.';
+                        statusElement.className = 'status not-verified';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusElement.textContent = 'Invalid serial number or surname. Cannot be found in the system.';
+                    statusElement.className = 'status not-verified';
+                });
+        });
     </script>
 </body>
 </html>
