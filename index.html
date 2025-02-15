@@ -91,11 +91,11 @@
                         console.log('Fetched Serial Number:', serialNumber);
                         console.log('Fetched Surname:', surname);
 
-                        return row['Serial Number'] === serialNumber && row['Surname'].toLowerCase() === surname.toLowerCase();
+                        return String(row['Serial Number']) === serialNumber && row['Surname'].toLowerCase() === surname.toLowerCase();
                     });
 
                     if (found) {
-                        var details = jsonData.find(row => row['Serial Number'] === serialNumber && row['Surname'] === surname.toLowerCase());
+                        var details = jsonData.find(row => String(row['Serial Number']) === serialNumber && row['Surname'] === surname.toLowerCase());
                         console.log('Certificate Details:', details);
                         statusElement.innerHTML = `Verified. Certificate details below.<br>${details['Given Name']} ${details['Surname']}<br>${details['Training Workshop Name']}<br>${details['Training Workshop Venue']}, ${details['Training Workshop Date']}`;
                         statusElement.className = 'status verified';
