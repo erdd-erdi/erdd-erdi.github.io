@@ -16,9 +16,17 @@
             width: 100px;
             margin-bottom: 20px;
         }
+        .input-container {
+            background-color: #f0f0f0; /* Washed-out background color */
+            padding: 20px;
+            display: inline-block;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
         .input-box {
             margin: 10px 0;
             text-align: center;
+            box-sizing: border-box;
         }
         .status {
             font-size: 1.2em;
@@ -29,6 +37,9 @@
         }
         .not-verified {
             color: red;
+        }        
+        .verify-button-container {
+            text-align: right;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -37,13 +48,11 @@
     <div class="container">
         <img src="Asian_Development_Bank_logo.png" alt="Organization Logo" class="logo">
         <p>Please enter the 11-digit <strong>serial number</strong> and <strong>surname</strong> in the e-certificate:</p>
-        <div>
+        <div class="input-container">
             <input type="text" id="serial-number" class="input-box" maxlength="11" placeholder="Serial Number">
-        </div>
-        <div>
             <input type="text" id="surname" class="input-box" placeholder="Surname">
         </div>
-        <div>
+        <div class='verify-button-container'>
             <button id="verify-button">Verify</button>
         </div>
         <div id="status" class="status"> ... </div>
