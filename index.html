@@ -86,6 +86,11 @@
                     console.log('Fetched Data:', jsonData);
                     
                     var found = jsonData.some(row => {
+                        console.log('Row Serial Number:', row['Serial Number']);
+                        console.log('Row Surname:', row['Surname']);
+                        console.log('Fetched Serial Number:', serialNumber);
+                        console.log('Fetched Surname:', surname;
+
                         return row['Serial Number'] === serialNumber && row['Surname'].toLowerCase() === surname.toLowerCase();
                     });
 
