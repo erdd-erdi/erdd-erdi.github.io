@@ -14,10 +14,22 @@ jobs:
           path: data
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
+      - name: Remove Submodule Configuration
+        run: |
+          git rm --cached data
+          rm -rf .git/modules/data
+
+      - name: Set up SSH for GitHub
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Commit and Push Data to Public Repo
         run: |
           git config --global user.name "erdd-erdi"
           git config --global user.email "mcordel@adb.org"
           git add data
           git commit -m "Sync private data"
-          git push origin main
+          git push git@github.com:${{ github.repository }}.git HEAD:main
