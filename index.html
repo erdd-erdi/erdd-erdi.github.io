@@ -61,7 +61,7 @@
             var statusElement = document.getElementById('status');
 
             if (serialNumber.length !== 11 || !surname) {
-                statusElement.textContent = 'Missing input: Please provide both serial number and surname.';
+                statusElement.textContent = 'Missing input or invalid serial number: Please provide both serial number and surname.';
                 statusElement.className = 'status not-verified';
                 return;
             }
@@ -82,12 +82,16 @@
                     var sheet = workbook.Sheets[sheetName];
                     var jsonData = XLSX.utils.sheet_to_json(sheet);
 
+                    // Log the fetched data
+                    console.log('Fetched Data:', jsonData);
+                    
                     var found = jsonData.some(row => {
-                        return row['Serial Number'] === serialNumber && row['Surname'] === surname;
+                        return row['Serial Number'] === serialNumber && row['Surname'].toLowerCase() === surname.toLowerCase();
                     });
 
                     if (found) {
-                        var details = jsonData.find(row => row['Serial Number'] === serialNumber && row['Surname'] === surname);
+                        var details = jsonData.find(row => row['Serial Number'] === serialNumber && row['Surname'] === surname.toLowerCase());
+                        console.log('Certificate Details:', details);
                         statusElement.innerHTML = `Verified. Certificate details below.<br>${details['Given Name']} ${details['Surname']}<br>${details['Training Workshop Name']}<br>${details['Training Workshop Venue']}, ${details['Training Workshop Date']}`;
                         statusElement.className = 'status verified';
                     } else {
@@ -97,6 +101,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    console.log('Fetched Data:', jsonData);
                     statusElement.textContent = 'Invalid serial number or surname. Cannot be found in the system.';
                     statusElement.className = 'status not-verified';
                 });
