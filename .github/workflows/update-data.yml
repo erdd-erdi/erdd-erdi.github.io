@@ -41,6 +41,6 @@ jobs:
       # Push changes using GITHUB_TOKEN
       - name: Push changes to public repo
         run: |
-          git push https://github.com/${{ github.repository_owner }}/erdd-erdi.github.io.git HEAD:main
+          git push https://github.com/${{ github.repository_owner }}/erdd-erdi.github.io HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
