@@ -14,21 +14,24 @@ jobs:
           path: data
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
+      - name: Set Git Identity
+        run: |
+          git config --global user.name "erdd-erdi"
+          git config --global user.email "mcordel@adb.org"
+
       - name: Remove data folder if it was added as a submodule
         run: |
           git submodule deinit -f data || true
           git rm --cached data || true
-          git commit -m "Removed data folder (submodule or cache)"
-        
+          git commit -m "Removed data folder (submodule or cache)" || true
+
       - name: Sync private data to public repo
         run: |
-          # Make sure the data is in the right location
+          # Copy the data from the private repo into the public repo
           cp -r data/* .
-          
+        
       - name: Commit the sync and push changes
         run: |
-          git config --global user.name "erdd-erdi"
-          git config --global user.email "mcordel@adb.org"
           git add .
           git commit -m "Sync private data"
           git push
