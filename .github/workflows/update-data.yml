@@ -23,6 +23,7 @@ jobs:
         run: |
           git submodule deinit -f data || true
           git rm --cached data || true
+          git add .gitmodules
           git commit -m "Removed data folder (submodule or cache)" || true
 
       - name: Sync private data to public repo
