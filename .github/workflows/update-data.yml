@@ -19,6 +19,13 @@ jobs:
           git config --global user.name "erdd-erdi"
           git config --global user.email "mcordel@adb.org"
 
+      - name: Set up SSH for GitHub
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          
       - name: Remove data folder if it was added as a submodule
         run: |
           git submodule deinit -f data || true
