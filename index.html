@@ -102,7 +102,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     console.log('Fetched Data:', jsonData);
-                    statusElement.textContent = 'Invalid serial number or surname. Cannot be found in the system.';
+                    statusElement.textContent = 'Error in general.';
                     statusElement.className = 'status not-verified';
                 });
         });
