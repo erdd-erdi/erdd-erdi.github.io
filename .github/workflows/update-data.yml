@@ -13,3 +13,11 @@ jobs:
           repository: erdd-erdi/registry-data
           path: data
           ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Commit and Push Data to Public Repo
+        run: |
+          git config --global user.name "erdd-erdi"
+          git config --global user.email "mcordel@adb.org"
+          git add data
+          git commit -m "Sync private data"
+          git push origin main
