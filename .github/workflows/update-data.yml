@@ -1,45 +1,46 @@
-name: Sync Private Data
-on: [push]
+name: Sync Private Data to Public Repo
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-  update-data:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Public Repo
-        uses: actions/checkout@v3
+      # Checkout the public repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
         
-      - name: Checkout Private Data Repo
-        uses: actions/checkout@v3
-        with:
-          repository: erdd-erdi/registry-data
-          path: data
-          ssh-key: ${{ secrets.DEPLOY_KEY }}
-
-      - name: Set Git Identity
+      # Set up Git identity for commits
+      - name: Set up Git user
         run: |
-          git config --global user.name "erdd-erdi"
           git config --global user.email "mcordel@adb.org"
-        
-      - name: Remove data folder if it was added as a submodule
-        run: |
-          git submodule deinit -f data || true
-          git rm --cached data || true
-          git add .gitmodules
-          git commit -m "Removed data folder (submodule or cache)" || true
+          git config --global user.name "erdd-erdi"
 
-      - name: Sync private data to public repo
+      # Fetch the latest changes in the private repo
+      - name: Fetch private data from private repo
         run: |
-          # Copy the data from the private repo into the public repo
+          git clone https://github.com/erdd-erdi/registry-data.git data
+          cd data
+          git fetch --all
+          git pull origin main
+
+      # Copy the data into your main repository
+      - name: Copy data to main repository
+        run: |
           cp -r data/* .
 
-      - name: Set up SSH for GitHub
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          
-      - name: Commit the sync and push changes
+      # Stage and commit the changes
+      - name: Commit data
         run: |
           git add .
           git commit -m "Sync private data"
-          git push git@github.com:erdd-erdi/erdd-erdi.github.io.git
+
+      # Push changes using GITHUB_TOKEN
+      - name: Push changes to public repo
+        run: |
+          git push https://github.com/${{ github.repository }}.git HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
