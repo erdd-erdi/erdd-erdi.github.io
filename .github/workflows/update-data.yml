@@ -22,7 +22,7 @@ jobs:
       # Fetch the latest changes in the private repo
       - name: Fetch private data from private repo
         run: |
-          git clone https://x-access-token:${{ secrets.PRIVATE_DATA }}@github.com/erdd-erdi/registry-data.git data
+          git clone https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/erdd-erdi/registry-data.git data
           cd data
           git fetch --all
           git pull origin main
@@ -43,4 +43,4 @@ jobs:
         run: |
           git push https://github.com/${{ github.repository_owner }}/erdd-erdi.github.io HEAD:main
         env:
-          GITHUB_TOKEN: ${{ secrets.PRIVATE_DATA }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
