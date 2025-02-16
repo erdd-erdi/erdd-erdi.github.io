@@ -35,8 +35,7 @@ jobs:
       # Stage and commit the changes
       - name: Commit data
         run: |
-          git submodule update --remote
-          git add data
+          git add .
           git commit -m "Sync private data with submodule changes"
 
       # Push changes using GITHUB_TOKEN
